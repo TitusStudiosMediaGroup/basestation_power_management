@@ -1,3 +1,0 @@
-[submodule "lighthouse"]
-	path = include/lighthouse
-	url = https://github.com/nouser2013/lighthouse-v2-manager
