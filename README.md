@@ -2,17 +2,17 @@
 
 Using [nouser2013's](https://github.com/nouser2013) [lighthouse-v2-manager](https://github.com/nouser2013/lighthouse-v2-manager) python script and snippets from [BOLL7708's](https://github.com/BOLL7708) [OpenVRStartup](https://github.com/BOLL7708/OpenVRStartup) automatic command file executor.
 
-Licenses for bundled code are found in their respective folders inside `./include/`.
+Licenses for bundled code are found in their respective folders inside `./include/`
 
 ---
 
 **Required dependencies:**
-    * .NET 6.0 Required. Not bundled into executable
-    * Windows 10, at least 17xx build
-    * BLE / Bluetooth 4.0 dongle installed and connected (not a BGAPI one!)
-    * Python 3
-        * Pythonnet `pip3 install pythonnet`
-        * bleak `pip3 install bleak`
+* .NET 6.0 Required. Not bundled into executable
+* Windows 10, at least 17xx build
+* BLE / Bluetooth 4.0 dongle installed and connected (not a BGAPI one!)
+* Python 3
+    * Pythonnet `pip3 install pythonnet`
+    * bleak `pip3 install bleak`
 
 ---
 
