@@ -1,0 +1,16 @@
+{
+	"applications": [
+		{
+			"app_key": "titus.basestation_power_management",
+			"launch_type": "binary",
+			"binary_path_windows": "Base Station Power Management.exe",
+			"is_dashboard_overlay": true,
+			"strings": {
+				"en_us": {
+					"name": "Base Station Power Management",
+					"description": "Wakes and sleeps Base Stations on SteamVR open and exit."
+				}
+			}
+		}
+	]
+}
