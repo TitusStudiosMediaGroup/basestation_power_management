@@ -13,6 +13,8 @@ Licenses for bundled code are found in their respective folders inside `./includ
 * Python 3
     * Pythonnet `pip3 install pythonnet`
     * bleak `pip3 install bleak`
+* FluentAssertions
+* xunit
 
 ---
 
