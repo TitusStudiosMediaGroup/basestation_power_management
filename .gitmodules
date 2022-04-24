@@ -1,3 +1,6 @@
 [submodule "include/lighthouse"]
 	path = include/lighthouse
 	url = https://github.com/nouser2013/lighthouse-v2-manager
+[submodule "include/crayon"]
+	path = include/crayon
+	url = https://github.com/riezebosch/crayon.git
