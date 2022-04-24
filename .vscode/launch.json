@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/bin/Debug/net6.0/Base Station Power Management.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {

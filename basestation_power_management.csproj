@@ -2,7 +2,6 @@
   <PropertyGroup>
     <AssemblyName>Base Station Power Management</AssemblyName>
     <OutputType>Exe</OutputType>
-    <OutputPath>bin/win64/</OutputPath>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -16,8 +15,18 @@
     <None Include="./resources/**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="app.vrmanifest">
+    <None Include="openvr_api.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="openvr_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="app.vrmanifest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None> 
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.6.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
 </Project>

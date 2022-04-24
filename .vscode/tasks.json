@@ -8,15 +8,32 @@
             "command": "dotnet",
             "type": "shell",
             "args": [
+                "build",
+                //"/property:r=win-x64",
+                "/property:self-contained=false",
+                // Ask dotnet build to generate full paths for file names.
+                "/property:GenerateFullPaths=true",
+                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
                 "publish",
                 "/property:r=win-x64",
                 "/property:self-contained=false",
                 // Ask dotnet build to generate full paths for file names.
                 "/property:GenerateFullPaths=true",
                 // Do not generate summary otherwise it leads to duplicate errors in Problems panel
-                "/consoleloggerparameters:NoSummary",
-                //Output Binary
-                "/property:PublishDir=./build/"
+                "/consoleloggerparameters:NoSummary"
             ],
             "group": "build",
             "presentation": {
