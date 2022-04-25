@@ -7,14 +7,17 @@ Licenses for bundled code are found in their respective folders inside `./includ
 ---
 
 **Required dependencies:**
+* OpenVR (already installed if you have SteamVR installed)
 * .NET 6.0 Required. Not bundled into executable
+   * coverlet.collector
+   * FluentAssertions
+   * xunit
+   * xunit.runner.visualstudio
 * Windows 10, at least 17xx build
 * BLE / Bluetooth 4.0 dongle installed and connected (not a BGAPI one!)
 * Python 3
     * Pythonnet `pip3 install pythonnet`
     * bleak `pip3 install bleak`
-* FluentAssertions
-* xunit
 
 ---
 
