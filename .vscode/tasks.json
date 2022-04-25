@@ -13,6 +13,8 @@
                 "/property:self-contained=false",
                 // Ask dotnet build to generate full paths for file names.
                 "/property:GenerateFullPaths=true",
+                // uwu pwease dont build my dependencies :flushed:
+                "/property:BuildProjectReferences=false",
                 // Do not generate summary otherwise it leads to duplicate errors in Problems panel
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,6 +34,8 @@
                 "/property:self-contained=false",
                 // Ask dotnet build to generate full paths for file names.
                 "/property:GenerateFullPaths=true",
+                // uwu pwease dont build my dependencies :flushed:
+                "/property:BuildProjectReferences=false",
                 // Do not generate summary otherwise it leads to duplicate errors in Problems panel
                 "/consoleloggerparameters:NoSummary"
             ],

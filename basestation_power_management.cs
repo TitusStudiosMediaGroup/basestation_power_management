@@ -12,15 +12,14 @@ namespace basestation_power_management
         // Put your lighthouse MAC addresses in the array below seperated by commas.
         private static readonly string[] LH_Addresses = new string[] {"D1:57:E0:68:C5:9F","D4:F7:08:5A:48:76"};
 
-        private static bool DEBUG = true;
+        private static bool DEBUG = false;
         private static readonly int RetryAttempts = 2;
         private static int Attempts = 0;
         private static bool CheckEvents = false;
-
+        private static bool StationState = false;
 
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
-
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
@@ -32,45 +31,63 @@ namespace basestation_power_management
             Console.Title = "Base Station Power Management Console";
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             if(args.Contains("debug")) DEBUG = true;
-            if(DEBUG == false) ShowWindow(GetConsoleWindow(),CW_HIDE);
+
+            switch(DEBUG){
+                case false:
+                    ShowWindow(GetConsoleWindow(),CW_HIDE);
+                    Console.WriteLine(White(Reversed("  Base Station Power Management v1.0  ")));
+                    Console.WriteLine($"{Bold(Magenta("note"))}{White(": Application is not running in debug mode, console will not be visble.\n")}");
+                    break;
+                default:
+                    Console.WriteLine(White(Reversed("  Base Station Power Management v1.0  ")));
+                    Console.WriteLine($"{Bold(Magenta("note"))}{White(": Application is running in debug mode, console will be visble.\n")}"); 
+                    break;
+            }
 
             InjectApplication();
-            Console.WriteLine("Changing base stations to WAKE state.");
-            LighthouseState(true);
-
-            CheckEvents = true;
+            if(CheckEvents == true) Console.WriteLine($"{Bold(Cyan("hint"))}{White(": Process standing by for OpenVR exit")}");
 
             while(CheckEvents)
             {
-                var vrEvent = new VREvent_t();
-                uint eventSize = (uint)Marshal.SizeOf(vrEvent);
-                OpenVR.System.PollNextEvent(ref vrEvent,eventSize);
-
-                if((EVREventType)vrEvent.eventType == EVREventType.VREvent_Quit)
-                {
-                    OpenVR.System.AcknowledgeQuit_Exiting();
-                    PrintSuccess("Acknowledge OpenVR quit,","exiting.");
-                    OpenVR.Shutdown();
-                    Console.WriteLine("Changing base stations to SLEEP state.");
-                    LighthouseState(false);
-                    CheckEvents = false;
-                }
+                OpenVRWatchdog();
             }
 
-            Console.WriteLine($"{Bold(Magenta("note"))}: OpenVR Session closed, Press ENTER to close progam.");
+            PrintSuccess("OpenVR Session closed.","");
+            if(StationState == false) Console.WriteLine($"{Bold(Cyan("hint"))}: Program finished. Press enter to close progam.");
             if(DEBUG == true) Console.ReadLine();
         }
 
-        private static void PrintError(string process,string status,string error_type)
+        private static void OpenVRWatchdog()
         {
-            Console.WriteLine(Bold().Red($"  error{White(": mainthread-exited-with-error\n")}"));
+            var vrEvent = new VREvent_t();
+            uint eventSize = (uint)Marshal.SizeOf(vrEvent);
+            OpenVR.System.PollNextEvent(ref vrEvent,eventSize);
+
+            if((EVREventType)vrEvent.eventType == EVREventType.VREvent_Quit)
+            {
+                OpenVR.System.AcknowledgeQuit_Exiting();
+                PrintSuccess("Acknowledge OpenVR quit,","exiting.");
+                OpenVR.Shutdown();
+                Console.WriteLine("Changing base stations to SLEEP state.");
+                LighthouseState(false);
+                CheckEvents = false;
+            }
+            //await Task.Delay(2000);
+        }
+
+        //Beautify that console! (Based on Textualize's Rich, and pip)
+        private static void PrintError(string process,string status,string detail,string error_type)
+        {
+            //ShowWindow(GetConsoleWindow(),CW_SHOW);
+            Console.WriteLine(Bold().Red($"error{White(": mainthread-exited-with-error\n")}"));
             Console.WriteLine(Red($"  \u00d7 {process} {White(status)}"));
+            Console.WriteLine(Red($"  \u2570\u2500> {White(detail)}"));
             Console.WriteLine(Red($"\u00d7 {White($"{error_type}")}\n"));
         }
 
         private static void PrintSuccess(string process,string status)
         {
-            Console.WriteLine(Green($"\u2713 {process} {White(status)}"));
+            Console.WriteLine(Green($"\u221A {process} {White(status)}"));
         }
 
         private static void PrintProcessError(string cmd,string args,int exitcode,string output)
@@ -86,11 +103,14 @@ namespace basestation_power_management
             Console.WriteLine(Cyan($"{Bold("hint")}{White(": See above for output from the failure.")}"));
         }
 
-        private static void PrintProcessSuccess(string cmd,string args,int exitcode)
+        private static void PrintProcessSuccess(string cmd,string args,int exitcode,string output)
         {
             Console.WriteLine(Bold().Green($"  success{White(": subprocess-exited-without-error\n")}"));
-            Console.WriteLine(Green($"  \u2713 Running {cmd} {args} {White("ran successfully.")}"));
-            Console.WriteLine(White($"    exit code: {Cyan($"{exitcode}")}"));
+            Console.WriteLine(Green($"  \u221A Running {cmd} {args} {White("ran successfully.")}"));
+            Console.WriteLine(Green($"  │ {White($"exit code: {Cyan($"{exitcode}")}")}"));
+            Console.WriteLine(Green($"  \u2570\u2500> [{Regex.Matches(output,"\n").Count} lines of output]"));
+            Console.WriteLine(output.Replace("\n","\n"+"      "));
+            Console.WriteLine(Green("      [end of output]\n"));
         }
 
         private static void InjectApplication()
@@ -100,14 +120,22 @@ namespace basestation_power_management
 
             if(!OpenVR.Applications.IsApplicationInstalled("titus.basestation_power_management"))
             {
-                PrintError("OpenVR application manifest","\"titus.basestation_power_management\" does not exist!","Encountered error while checking for application manifest.");
-                Console.WriteLine("Installing OpenVR application manifest");
+                PrintError("OpenVR application manifest","\"titus.basestation_power_management\" does not exist!","The system cannot find the file specified.","Encountered error while checking for application manifest.");
+                Console.WriteLine($"{Bold(Magenta("note"))}{White(": OpenVR application manifest not found, probably inital run. Attemping to install\nInstalling OpenVR application manifest")}");
+                Console.WriteLine($"{Bold(Magenta("note"))}{White(": OpenVR will automatically restart the application after installation.")}");
                 OpenVR.Applications.AddApplicationManifest(Path.GetFullPath("./app.vrmanifest"),false);
                 OpenVR.Applications.SetApplicationAutoLaunch("titus.basestation_power_management",true);
                 PrintSuccess("OpenVR application manifest","has been installed.");
+                CheckEvents = false;
+                OpenVR.Shutdown();
             }
-
-            PrintSuccess("OpenVR Application manifest","already installed.");
+            else
+            {
+                PrintSuccess("OpenVR Application manifest","already installed.");
+                Console.WriteLine("Changing base stations to WAKE state.");
+                LighthouseState(true);
+                CheckEvents = true;
+            }
         }
 
         private static async void LighthouseState(bool State)
@@ -141,12 +169,14 @@ namespace basestation_power_management
                 }
                 else
                 {
-                    PrintProcessSuccess($"python3",Manager.StartInfo.Arguments,Manager.ExitCode);
+                    PrintProcessSuccess($"python3",Manager.StartInfo.Arguments,Manager.ExitCode,Stream);
                     Console.WriteLine("");
                     for (int i = 0; i < LH_Addresses.GetLength(0); i++)
                     {
                         PrintSuccess("Lighthouse ("+LH_Addresses[i]+")","successfully changed state to " + (State == true ? "wake." : "sleep."));
                     }
+                    StationState = State;
+
                 }
 
                 Manager.Kill();
